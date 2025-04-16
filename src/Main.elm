@@ -93,7 +93,7 @@ update msg model =
         GetSeed seed ->
             let
                 newSeed = Random.step genRandomInt seed |> Tuple.first
-                newUrl = "/minesweeper/index.html?seed=" ++ String.fromInt newSeed ++ "&?size=" ++ String.fromInt model.size
+                newUrl = "/minesweeper/index.html?seed=" ++ String.fromInt newSeed ++ "&size=" ++ String.fromInt model.size
             in
                 ( { model | seed = newSeed, gameStatus = Playing }
                 , Cmd.batch
