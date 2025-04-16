@@ -5518,7 +5518,7 @@ var $author$project$Main$getQueryInt = F2(
 						var s = _v0.a;
 						var _v1 = _v0.b;
 						var val = _v1.a;
-						return _Utils_eq(s, str) ? $elm$core$String$toInt(val) : $elm$core$Maybe$Nothing;
+						return A2($elm$core$String$contains, str, s) ? $elm$core$String$toInt(val) : $elm$core$Maybe$Nothing;
 					} else {
 						return $elm$core$Maybe$Nothing;
 					}
@@ -6318,7 +6318,7 @@ var $author$project$Main$update = F2(
 		if (msg.$ === 'GetSeed') {
 			var seed = msg.a;
 			var newSeed = A2($elm$random$Random$step, $author$project$Main$genRandomInt, seed).a;
-			var newUrl = '/?seed=' + ($elm$core$String$fromInt(newSeed) + ('&?size=' + $elm$core$String$fromInt(model.size)));
+			var newUrl = 'minesweeper?seed=' + ($elm$core$String$fromInt(newSeed) + ('&?size=' + $elm$core$String$fromInt(model.size)));
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,

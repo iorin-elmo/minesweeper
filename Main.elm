@@ -108,7 +108,7 @@ update msg model =
         GetSeed seed ->
             let
                 newSeed = Random.step genRandomInt seed |> Tuple.first
-                newUrl = "/?seed=" ++ String.fromInt newSeed ++ "&?size=" ++ String.fromInt model.size
+                newUrl = "minesweeper?seed=" ++ String.fromInt newSeed ++ "&?size=" ++ String.fromInt model.size
             in
                 ( { model | seed = newSeed }
                 , Nav.pushUrl model.navKey newUrl
@@ -416,7 +416,7 @@ getQueryInt str query =
     |> List.filterMap
         (\part ->
             case String.split "=" part of
-                [ s, val ] -> if s == str then String.toInt val else Nothing
+                [ s, val ] -> if String.contains str s then String.toInt val else Nothing
                 _ -> Nothing
         )
     |> List.head
