@@ -4518,7 +4518,7 @@ var $elm$core$Set$toList = function (_v0) {
 	return $elm$core$Dict$keys(dict);
 };
 var $elm$core$Basics$GT = {$: 'GT'};
-var $author$project$Main$NoOp = {$: 'NoOp'};
+var $author$project$Type$NoOp = {$: 'NoOp'};
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
@@ -5228,11 +5228,11 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$application = _Browser_application;
-var $author$project$Main$GetSeed = function (a) {
+var $author$project$Type$GetSeed = function (a) {
 	return {$: 'GetSeed', a: a};
 };
-var $author$project$Main$Loading = {$: 'Loading'};
-var $author$project$Main$Safe = {$: 'Safe'};
+var $author$project$Type$Loading = {$: 'Loading'};
+var $author$project$Type$Safe = {$: 'Safe'};
 var $elm$core$List$append = F2(
 	function (xs, ys) {
 		if (!ys.b) {
@@ -5648,7 +5648,7 @@ var $author$project$Main$init = F3(
 						A2($elm$core$Maybe$withDefault, '', url.query)))));
 		var defaultReturn = _Utils_Tuple2(
 			0,
-			A2($elm$random$Random$generate, $author$project$Main$GetSeed, $elm$random$Random$independentSeed));
+			A2($elm$random$Random$generate, $author$project$Type$GetSeed, $elm$random$Random$independentSeed));
 		var _v1 = function () {
 			var _v2 = url.query;
 			if (_v2.$ === 'Just') {
@@ -5685,7 +5685,7 @@ var $author$project$Main$init = F3(
 				A2(
 					$elm$core$List$map,
 					function (c) {
-						return _Utils_Tuple2(c, $author$project$Main$Safe);
+						return _Utils_Tuple2(c, $author$project$Type$Safe);
 					},
 					A2(
 						$elm$core$List$concatMap,
@@ -5697,7 +5697,7 @@ var $author$project$Main$init = F3(
 						},
 						A2($elm$core$List$range, 0, newFieldSize - 1)))),
 			flags: 0,
-			gameStatus: $author$project$Main$Loading,
+			gameStatus: $author$project$Type$Loading,
 			hover: _Utils_Tuple2(-100, -100),
 			navKey: navKey,
 			seed: seed,
@@ -5708,10 +5708,10 @@ var $author$project$Main$init = F3(
 	});
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Main$Flag = {$: 'Flag'};
-var $author$project$Main$GameOver = {$: 'GameOver'};
-var $author$project$Main$Open = {$: 'Open'};
-var $author$project$Main$Playing = {$: 'Playing'};
+var $author$project$Type$Flag = {$: 'Flag'};
+var $author$project$Type$GameOver = {$: 'GameOver'};
+var $author$project$Type$Open = {$: 'Open'};
+var $author$project$Type$Playing = {$: 'Playing'};
 var $elm$core$Dict$foldl = F3(
 	function (func, acc, dict) {
 		foldl:
@@ -5768,17 +5768,17 @@ var $elm$core$Dict$sizeHelp = F2(
 var $elm$core$Dict$size = function (dict) {
 	return A2($elm$core$Dict$sizeHelp, 0, dict);
 };
-var $author$project$Main$allFlagCount = function (dic) {
+var $author$project$Field$allFlagCount = function (dic) {
 	return $elm$core$Dict$size(
 		A2(
 			$elm$core$Dict$filter,
 			F2(
 				function (_v0, tile) {
-					return _Utils_eq(tile, $author$project$Main$Flag);
+					return _Utils_eq(tile, $author$project$Type$Flag);
 				}),
 			dic));
 };
-var $author$project$Main$Bomb = {$: 'Bomb'};
+var $author$project$Type$Bomb = {$: 'Bomb'};
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:
@@ -6005,7 +6005,7 @@ var $elm$core$List$take = F2(
 	function (n, list) {
 		return A3($elm$core$List$takeFast, 0, n, list);
 	});
-var $author$project$Main$fieldGenerator = function (model) {
+var $author$project$Field$fieldGenerator = function (model) {
 	var bombMean = ((model.size * model.size) / 2) | 0;
 	var bombDeviation = (model.size / 3) | 0;
 	var bombCountGenerator = A2($elm$random$Random$int, bombMean - bombDeviation, bombMean + bombDeviation);
@@ -6039,7 +6039,7 @@ var $author$project$Main$fieldGenerator = function (model) {
 						return A2(
 							$elm$core$List$any,
 							$elm$core$Basics$eq(c),
-							newBombOrNot.a) ? $author$project$Main$Bomb : tile;
+							newBombOrNot.a) ? $author$project$Type$Bomb : tile;
 					}),
 				model.field)
 		});
@@ -6056,7 +6056,7 @@ var $elm$core$List$filter = F2(
 			list);
 	});
 var $elm$core$Basics$ge = _Utils_ge;
-var $author$project$Main$adjacency = F2(
+var $author$project$Field$adjacency = F2(
 	function (_v0, s) {
 		var x = _v0.a;
 		var y = _v0.b;
@@ -6086,7 +6086,7 @@ var $elm$core$Dict$isEmpty = function (dict) {
 		return false;
 	}
 };
-var $author$project$Main$flagSurround = F3(
+var $author$project$Game$flagSurround = F3(
 	function (_v0, s, dic) {
 		var x = _v0.a;
 		var y = _v0.b;
@@ -6099,9 +6099,9 @@ var $author$project$Main$flagSurround = F3(
 							$elm$core$List$any,
 							$elm$core$Basics$eq(c),
 							A2(
-								$author$project$Main$adjacency,
+								$author$project$Field$adjacency,
 								_Utils_Tuple2(x, y),
-								s)) && _Utils_eq(tile, $author$project$Main$Safe);
+								s)) && _Utils_eq(tile, $author$project$Type$Safe);
 					}),
 				dic));
 		return isAllOpened ? A2(
@@ -6112,9 +6112,9 @@ var $author$project$Main$flagSurround = F3(
 						$elm$core$List$any,
 						$elm$core$Basics$eq(c),
 						A2(
-							$author$project$Main$adjacency,
+							$author$project$Field$adjacency,
 							_Utils_Tuple2(x, y),
-							s)) && _Utils_eq(tile, $author$project$Main$Bomb)) ? $author$project$Main$Flag : tile;
+							s)) && _Utils_eq(tile, $author$project$Type$Bomb)) ? $author$project$Type$Flag : tile;
 				}),
 			dic) : dic;
 	});
@@ -6149,7 +6149,7 @@ var $elm$core$Dict$get = F2(
 			}
 		}
 	});
-var $author$project$Main$openSurround = F3(
+var $author$project$Game$openSurround = F3(
 	function (_v0, s, dic) {
 		var x = _v0.a;
 		var y = _v0.b;
@@ -6162,9 +6162,9 @@ var $author$project$Main$openSurround = F3(
 							$elm$core$List$any,
 							$elm$core$Basics$eq(c),
 							A2(
-								$author$project$Main$adjacency,
+								$author$project$Field$adjacency,
 								_Utils_Tuple2(x, y),
-								s)) && _Utils_eq(tile, $author$project$Main$Bomb);
+								s)) && _Utils_eq(tile, $author$project$Type$Bomb);
 					}),
 				dic));
 		return isAllFlagged ? A2(
@@ -6175,13 +6175,13 @@ var $author$project$Main$openSurround = F3(
 						$elm$core$List$any,
 						$elm$core$Basics$eq(c),
 						A2(
-							$author$project$Main$adjacency,
+							$author$project$Field$adjacency,
 							_Utils_Tuple2(x, y),
-							s)) && _Utils_eq(tile, $author$project$Main$Safe)) ? $author$project$Main$Open : tile;
+							s)) && _Utils_eq(tile, $author$project$Type$Safe)) ? $author$project$Type$Open : tile;
 				}),
 			dic) : dic;
 	});
-var $author$project$Main$randomOpen = function (model) {
+var $author$project$Field$randomOpen = function (model) {
 	var openMin = model.size + 1;
 	var openMax = model.size * 2;
 	var _v0 = A2(
@@ -6200,20 +6200,20 @@ var $author$project$Main$randomOpen = function (model) {
 						return A2(
 							$elm$core$List$any,
 							$elm$core$Basics$eq(c),
-							A2($elm$core$List$take, n, model.bombOrNot.b)) ? $author$project$Main$Open : tile;
+							A2($elm$core$List$take, n, model.bombOrNot.b)) ? $author$project$Type$Open : tile;
 					}),
 				model.field)
 		});
 };
-var $author$project$Main$gameUpdate = F2(
+var $author$project$Game$gameUpdate = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'TestStart':
-				return $author$project$Main$randomOpen(
-					$author$project$Main$fieldGenerator(
+				return $author$project$Field$randomOpen(
+					$author$project$Field$fieldGenerator(
 						_Utils_update(
 							model,
-							{gameStatus: $author$project$Main$Playing})));
+							{gameStatus: $author$project$Type$Playing})));
 			case 'Opened':
 				var _v1 = msg.a;
 				var x = _v1.a;
@@ -6234,7 +6234,7 @@ var $author$project$Main$gameUpdate = F2(
 										field: A3(
 											$elm$core$Dict$insert,
 											_Utils_Tuple2(x, y),
-											$author$project$Main$Open,
+											$author$project$Type$Open,
 											model.field)
 									});
 							case 'Bomb':
@@ -6242,27 +6242,27 @@ var $author$project$Main$gameUpdate = F2(
 								return _Utils_update(
 									model,
 									{
-										gameStatus: $author$project$Main$GameOver,
+										gameStatus: $author$project$Type$GameOver,
 										hover: _Utils_Tuple2(-100, -100)
 									});
 							case 'Open':
 								var _v5 = _v2.a;
 								var newField = A3(
-									$author$project$Main$flagSurround,
+									$author$project$Game$flagSurround,
 									_Utils_Tuple2(x, y),
 									model.size,
 									A3(
-										$author$project$Main$openSurround,
+										$author$project$Game$openSurround,
 										_Utils_Tuple2(x, y),
 										model.size,
 										model.field));
-								var newFlagCount = $author$project$Main$allFlagCount(newField);
+								var newFlagCount = $author$project$Field$allFlagCount(newField);
 								return _Utils_update(
 									model,
 									{
 										field: newField,
 										flags: newFlagCount,
-										gameStatus: _Utils_eq(newFlagCount, model.bombs) ? $author$project$Main$GameOver : model.gameStatus,
+										gameStatus: _Utils_eq(newFlagCount, model.bombs) ? $author$project$Type$GameOver : model.gameStatus,
 										hover: _Utils_eq(newFlagCount, model.bombs) ? _Utils_Tuple2(-100, -100) : model.hover
 									});
 							default:
@@ -6290,7 +6290,7 @@ var $author$project$Main$gameUpdate = F2(
 								return _Utils_update(
 									model,
 									{
-										gameStatus: $author$project$Main$GameOver,
+										gameStatus: $author$project$Type$GameOver,
 										hover: _Utils_Tuple2(-100, -100)
 									});
 							case 'Bomb':
@@ -6301,10 +6301,10 @@ var $author$project$Main$gameUpdate = F2(
 										field: A3(
 											$elm$core$Dict$insert,
 											_Utils_Tuple2(x, y),
-											$author$project$Main$Flag,
+											$author$project$Type$Flag,
 											model.field),
 										flags: model.flags + 1,
-										gameStatus: $author$project$Main$GameOver,
+										gameStatus: $author$project$Type$GameOver,
 										hover: _Utils_Tuple2(-100, -100)
 									}) : _Utils_update(
 									model,
@@ -6312,7 +6312,7 @@ var $author$project$Main$gameUpdate = F2(
 										field: A3(
 											$elm$core$Dict$insert,
 											_Utils_Tuple2(x, y),
-											$author$project$Main$Flag,
+											$author$project$Type$Flag,
 											model.field),
 										flags: model.flags + 1
 									});
@@ -6339,13 +6339,13 @@ var $author$project$Main$gameUpdate = F2(
 				return model;
 		}
 	});
-var $author$project$Main$genRandomInt = A2($elm$random$Random$int, 0, $elm$random$Random$maxInt);
+var $author$project$Game$genRandomInt = A2($elm$random$Random$int, 0, $elm$random$Random$maxInt);
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'GetSeed') {
 			var seed = msg.a;
-			var newSeed = A2($elm$random$Random$step, $author$project$Main$genRandomInt, seed).a;
+			var newSeed = A2($elm$random$Random$step, $author$project$Game$genRandomInt, seed).a;
 			var newUrl = '/index.html?seed=' + ($elm$core$String$fromInt(newSeed) + ('&?size=' + $elm$core$String$fromInt(model.size)));
 			return _Utils_Tuple2(
 				_Utils_update(
@@ -6354,19 +6354,19 @@ var $author$project$Main$update = F2(
 				A2($elm$browser$Browser$Navigation$pushUrl, model.navKey, newUrl));
 		} else {
 			return _Utils_Tuple2(
-				A2($author$project$Main$gameUpdate, msg, model),
+				A2($author$project$Game$gameUpdate, msg, model),
 				$elm$core$Platform$Cmd$none);
 		}
 	});
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $author$project$Main$Flagged = function (a) {
+var $author$project$Type$Flagged = function (a) {
 	return {$: 'Flagged', a: a};
 };
-var $author$project$Main$HoverOut = {$: 'HoverOut'};
-var $author$project$Main$Hovered = function (a) {
+var $author$project$Type$HoverOut = {$: 'HoverOut'};
+var $author$project$Type$Hovered = function (a) {
 	return {$: 'Hovered', a: a};
 };
-var $author$project$Main$Opened = function (a) {
+var $author$project$Type$Opened = function (a) {
 	return {$: 'Opened', a: a};
 };
 var $elm$virtual_dom$VirtualDom$attribute = F2(
@@ -6377,15 +6377,15 @@ var $elm$virtual_dom$VirtualDom$attribute = F2(
 			_VirtualDom_noJavaScriptOrHtmlUri(value));
 	});
 var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
-var $author$project$Main$count = F2(
+var $author$project$Field$count = F2(
 	function (f, list) {
 		return $elm$core$List$length(
 			A2($elm$core$List$filter, f, list));
 	});
-var $author$project$Main$bombCount = F3(
+var $author$project$Field$bombCount = F3(
 	function (c, s, dic) {
 		return A2(
-			$author$project$Main$count,
+			$author$project$Field$count,
 			function (_v0) {
 				var x = _v0.a;
 				var y = _v0.b;
@@ -6394,30 +6394,30 @@ var $author$project$Main$bombCount = F3(
 						$elm$core$Dict$get,
 						_Utils_Tuple2(x, y),
 						dic),
-					$elm$core$Maybe$Just($author$project$Main$Bomb)) || _Utils_eq(
+					$elm$core$Maybe$Just($author$project$Type$Bomb)) || _Utils_eq(
 					A2(
 						$elm$core$Dict$get,
 						_Utils_Tuple2(x, y),
 						dic),
-					$elm$core$Maybe$Just($author$project$Main$Flag));
+					$elm$core$Maybe$Just($author$project$Type$Flag));
 			},
-			A2($author$project$Main$adjacency, c, s));
+			A2($author$project$Field$adjacency, c, s));
 	});
 var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
 var $elm$svg$Svg$Attributes$fontSize = _VirtualDom_attribute('font-size');
 var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
-var $author$project$Main$isTileCleared = F3(
+var $author$project$Field$isTileCleared = F3(
 	function (c, s, dic) {
 		return !A2(
-			$author$project$Main$count,
+			$author$project$Field$count,
 			function (c_) {
 				var tile = A2(
 					$elm$core$Maybe$withDefault,
-					$author$project$Main$Safe,
+					$author$project$Type$Safe,
 					A2($elm$core$Dict$get, c_, dic));
-				return _Utils_eq(tile, $author$project$Main$Bomb) || _Utils_eq(tile, $author$project$Main$Safe);
+				return _Utils_eq(tile, $author$project$Type$Bomb) || _Utils_eq(tile, $author$project$Type$Safe);
 			},
-			A2($author$project$Main$adjacency, c, s));
+			A2($author$project$Field$adjacency, c, s));
 	});
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
@@ -6461,7 +6461,7 @@ var $elm$html$Html$Events$custom = F2(
 			$elm$virtual_dom$VirtualDom$Custom(decoder));
 	});
 var $elm$svg$Svg$Events$custom = $elm$html$Html$Events$custom;
-var $author$project$Main$rightClickEvent = function (msg) {
+var $author$project$JsonEvent$rightClickEvent = function (msg) {
 	return A2(
 		$elm$svg$Svg$Events$custom,
 		'contextmenu',
@@ -6474,31 +6474,31 @@ var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$svg$Svg$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$svg$Svg$Attributes$textAnchor = _VirtualDom_attribute('text-anchor');
 var $elm$svg$Svg$text_ = $elm$svg$Svg$trustedNode('text');
-var $author$project$Main$tileSize = 70;
+var $author$project$View$tileSize = 70;
 var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
 var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
 var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
-var $author$project$Main$tileView = F2(
+var $author$project$View$tileView = F2(
 	function (_v0, model) {
 		var x = _v0.a;
 		var y = _v0.b;
 		var tile = A2(
 			$elm$core$Maybe$withDefault,
-			$author$project$Main$Safe,
+			$author$project$Type$Safe,
 			A2(
 				$elm$core$Dict$get,
 				_Utils_Tuple2(x, y),
 				model.field));
 		var isInsideHoverSight = _Utils_eq(
 			A2($elm$core$Dict$get, model.hover, model.field),
-			$elm$core$Maybe$Just($author$project$Main$Open)) ? A2(
+			$elm$core$Maybe$Just($author$project$Type$Open)) ? A2(
 			$elm$core$List$any,
 			$elm$core$Basics$eq(
 				_Utils_Tuple2(x, y)),
 			A2(
 				$elm$core$List$cons,
 				model.hover,
-				A2($author$project$Main$adjacency, model.hover, model.size))) : _Utils_eq(
+				A2($author$project$Field$adjacency, model.hover, model.size))) : _Utils_eq(
 			model.hover,
 			_Utils_Tuple2(x, y));
 		return _List_fromArray(
@@ -6509,30 +6509,30 @@ var $author$project$Main$tileView = F2(
 					_List_fromArray(
 						[
 							$elm$svg$Svg$Attributes$x(
-							$elm$core$String$fromInt((x * $author$project$Main$tileSize) + 5)),
+							$elm$core$String$fromInt((x * $author$project$View$tileSize) + 5)),
 							$elm$svg$Svg$Attributes$y(
-							$elm$core$String$fromInt((y * $author$project$Main$tileSize) + 5)),
+							$elm$core$String$fromInt((y * $author$project$View$tileSize) + 5)),
 							$elm$svg$Svg$Attributes$width(
-							$elm$core$String$fromInt($author$project$Main$tileSize + 5)),
+							$elm$core$String$fromInt($author$project$View$tileSize + 5)),
 							$elm$svg$Svg$Attributes$height(
-							$elm$core$String$fromInt($author$project$Main$tileSize + 5)),
+							$elm$core$String$fromInt($author$project$View$tileSize + 5)),
 							$elm$svg$Svg$Attributes$stroke('white'),
 							$elm$svg$Svg$Attributes$strokeWidth('4'),
 							$elm$svg$Svg$Attributes$fill(
 							isInsideHoverSight ? '#292929' : 'black')
 						]),
-					_Utils_eq(model.gameStatus, $author$project$Main$Playing) ? _List_fromArray(
+					_Utils_eq(model.gameStatus, $author$project$Type$Playing) ? _List_fromArray(
 						[
 							$elm$svg$Svg$Events$onClick(
-							$author$project$Main$Opened(
+							$author$project$Type$Opened(
 								_Utils_Tuple2(x, y))),
-							$author$project$Main$rightClickEvent(
-							$author$project$Main$Flagged(
+							$author$project$JsonEvent$rightClickEvent(
+							$author$project$Type$Flagged(
 								_Utils_Tuple2(x, y))),
 							$elm$svg$Svg$Events$onMouseOver(
-							$author$project$Main$Hovered(
+							$author$project$Type$Hovered(
 								_Utils_Tuple2(x, y))),
-							$elm$svg$Svg$Events$onMouseOut($author$project$Main$HoverOut)
+							$elm$svg$Svg$Events$onMouseOut($author$project$Type$HoverOut)
 						]) : _List_Nil),
 				_List_Nil),
 				A2(
@@ -6542,20 +6542,20 @@ var $author$project$Main$tileView = F2(
 						function () {
 						if (tile.$ === 'Flag') {
 							return $elm$svg$Svg$Attributes$x(
-								$elm$core$String$fromInt((x * $author$project$Main$tileSize) + 5));
+								$elm$core$String$fromInt((x * $author$project$View$tileSize) + 5));
 						} else {
 							return $elm$svg$Svg$Attributes$x(
-								$elm$core$String$fromInt(((x * $author$project$Main$tileSize) + (($author$project$Main$tileSize / 4) | 0)) + 5));
+								$elm$core$String$fromInt(((x * $author$project$View$tileSize) + (($author$project$View$tileSize / 4) | 0)) + 5));
 						}
 					}(),
 						$elm$svg$Svg$Attributes$y(
-						$elm$core$String$fromInt((((y + 1) * $author$project$Main$tileSize) - (($author$project$Main$tileSize / 4) | 0)) + 5)),
+						$elm$core$String$fromInt((((y + 1) * $author$project$View$tileSize) - (($author$project$View$tileSize / 4) | 0)) + 5)),
 						$elm$svg$Svg$Attributes$textAnchor('right'),
 						$elm$svg$Svg$Attributes$fontSize(
-						$elm$core$String$fromInt((($author$project$Main$tileSize / 4) | 0) * 3)),
+						$elm$core$String$fromInt((($author$project$View$tileSize / 4) | 0) * 3)),
 						$elm$svg$Svg$Attributes$fill(
 						A3(
-							$author$project$Main$isTileCleared,
+							$author$project$Field$isTileCleared,
 							_Utils_Tuple2(x, y),
 							model.size,
 							model.field) ? '#a6a6a6' : 'white'),
@@ -6569,7 +6569,7 @@ var $author$project$Main$tileView = F2(
 								return $elm$svg$Svg$text(
 									$elm$core$String$fromInt(
 										A3(
-											$author$project$Main$bombCount,
+											$author$project$Field$bombCount,
 											_Utils_Tuple2(x, y),
 											model.size,
 											model.field)));
@@ -6582,12 +6582,12 @@ var $author$project$Main$tileView = F2(
 					]))
 			]);
 	});
-var $author$project$Main$fieldView = function (model) {
+var $author$project$View$fieldView = function (model) {
 	return $elm$core$List$concat(
 		A2(
 			$elm$core$List$map,
 			function (c) {
-				return A2($author$project$Main$tileView, c, model);
+				return A2($author$project$View$tileView, c, model);
 			},
 			A2(
 				$elm$core$List$concatMap,
@@ -6599,7 +6599,7 @@ var $author$project$Main$fieldView = function (model) {
 				},
 				A2($elm$core$List$range, 0, model.size - 1))));
 };
-var $author$project$Main$TestStart = {$: 'TestStart'};
+var $author$project$Type$TestStart = {$: 'TestStart'};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$Events$onClick = function (msg) {
 	return A2(
@@ -6608,7 +6608,7 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		$elm$json$Json$Decode$succeed(msg));
 };
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Main$gameStatusView = function (model) {
+var $author$project$View$gameStatusView = function (model) {
 	var _v0 = model.gameStatus;
 	switch (_v0.$) {
 		case 'Loading':
@@ -6616,7 +6616,7 @@ var $author$project$Main$gameStatusView = function (model) {
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
-						$elm$html$Html$Events$onClick($author$project$Main$TestStart)
+						$elm$html$Html$Events$onClick($author$project$Type$TestStart)
 					]),
 				_List_fromArray(
 					[
@@ -6630,11 +6630,11 @@ var $author$project$Main$gameStatusView = function (model) {
 	}
 };
 var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
-var $author$project$Main$viewBox = function (s) {
-	return '0 0 ' + ($elm$core$String$fromInt((s * $author$project$Main$tileSize) + 15) + (' ' + $elm$core$String$fromInt((s * $author$project$Main$tileSize) + 15)));
-};
 var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
-var $author$project$Main$view = function (model) {
+var $author$project$View$viewBox = function (s) {
+	return '0 0 ' + ($elm$core$String$fromInt((s * $author$project$View$tileSize) + 15) + (' ' + $elm$core$String$fromInt((s * $author$project$View$tileSize) + 15)));
+};
+var $author$project$View$view = function (model) {
 	return {
 		body: _List_fromArray(
 			[
@@ -6648,25 +6648,25 @@ var $author$project$Main$view = function (model) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								$author$project$Main$gameStatusView(model)
+								$author$project$View$gameStatusView(model)
 							])),
 						A2(
 						$elm$svg$Svg$svg,
 						_List_fromArray(
 							[
 								$elm$svg$Svg$Attributes$width(
-								$elm$core$String$fromInt(model.size * $author$project$Main$tileSize)),
+								$elm$core$String$fromInt(model.size * $author$project$View$tileSize)),
 								$elm$svg$Svg$Attributes$height(
-								$elm$core$String$fromInt(model.size * $author$project$Main$tileSize)),
+								$elm$core$String$fromInt(model.size * $author$project$View$tileSize)),
 								$elm$svg$Svg$Attributes$viewBox(
-								$author$project$Main$viewBox(model.size))
+								$author$project$View$viewBox(model.size))
 							]),
 						function () {
 							var _v0 = model.gameStatus;
 							if (_v0.$ === 'Loading') {
 								return _List_Nil;
 							} else {
-								return $author$project$Main$fieldView(model);
+								return $author$project$View$fieldView(model);
 							}
 						}())
 					]))
@@ -6681,16 +6681,16 @@ var $author$project$Main$main = $elm$browser$Browser$application(
 				return A3($author$project$Main$init, navKey, url, _Utils_Tuple0);
 			}),
 		onUrlChange: function (_v0) {
-			return $author$project$Main$NoOp;
+			return $author$project$Type$NoOp;
 		},
 		onUrlRequest: function (_v1) {
-			return $author$project$Main$NoOp;
+			return $author$project$Type$NoOp;
 		},
 		subscriptions: function (_v2) {
 			return $elm$core$Platform$Sub$none;
 		},
 		update: $author$project$Main$update,
-		view: $author$project$Main$view
+		view: $author$project$View$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
