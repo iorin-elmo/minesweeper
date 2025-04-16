@@ -37,7 +37,7 @@ type alias Model =
     , bombs : Int                   -- count of bombs
     , hover : (Int, Int)
     , seed : Int
-    , bombOrNot : ( List (Int,Int), List (Int,Int) )
+    , bombOrNot : ( List (Int, Int), List (Int, Int) )
     , navKey : Nav.Key
     , url : Url
     , size : Int
@@ -50,6 +50,8 @@ init navKey url _ =
         newFieldSize =
             getQueryInt "size" (Maybe.withDefault "" url.query)
                 |> Maybe.withDefault defaultSize
+                |> max 5
+                |> min 10
 
         initModel =
             { field =
@@ -63,7 +65,7 @@ init navKey url _ =
                     |> Dict.fromList
             , gameStatus = Loading
             , flags = 0
-            , bombs = 10
+            , bombs = 15
             , hover = (-100,-100)
             , seed = seed
             , bombOrNot =
@@ -97,7 +99,7 @@ init navKey url _ =
 type Msg
     = Opened (Int, Int)
     | Flagged (Int, Int)
-    | Hovered (Int,Int)
+    | Hovered (Int, Int)
     | HoverOut
     | TestStart
     | GetSeed Random.Seed
@@ -130,7 +132,7 @@ gameUpdate msg model =
         Opened (x,y) ->
             case Dict.get (x,y) model.field of
                 Just Safe -> { model | field = Dict.insert (x,y) Open model.field }
-                Just Bomb -> { model | gameStatus = GameOver }
+                Just Bomb -> { model | gameStatus = GameOver, hover = (-100, -100) }
                 Just Open ->
                     let
                         newField = openSurround (x,y) model.size model.field |> flagSurround (x,y) model.size
@@ -143,13 +145,17 @@ gameUpdate msg model =
                             if newFlagCount == model.bombs
                             then GameOver
                             else model.gameStatus
+                        , hover =
+                            if newFlagCount == model.bombs
+                            then (-100, -100)
+                            else model.hover
                         }
 
                 _ -> model
 
         Flagged (x,y) ->
             case Dict.get (x,y) model.field of
-                Just Safe -> { model | gameStatus = GameOver }
+                Just Safe -> { model | gameStatus = GameOver, hover = (-100, -100) }
                 Just Bomb ->
                     if model.flags == model.bombs - 1
                     then
@@ -157,6 +163,7 @@ gameUpdate msg model =
                         | field = Dict.insert (x,y) Flag model.field
                         , flags = model.flags + 1
                         , gameStatus = GameOver
+                        , hover = (-100, -100)
                         }
                     else
                         { model
@@ -175,17 +182,23 @@ gameUpdate msg model =
 
 
 tileSize = 70
+viewBox s =
+    "0 0 " ++
+    String.fromInt (s * tileSize + 15) ++ " " ++
+    String.fromInt (s * tileSize + 15)
 
 view : Model -> Browser.Document Msg
 view model =
     { title = "MineSweeper"
     , body =
-        [ Html.div []
-            [ Html.div [][ gameStatusView model ]
+        [ Html.div
+            []
+            [ Html.div []
+                [ gameStatusView model ]
             , svg
                 [ At.width <| String.fromInt <| model.size * tileSize
                 , At.height <| String.fromInt <| model.size * tileSize
-                , At.viewBox <| "0 0 1000 1000"
+                , At.viewBox <| viewBox model.size
                 ]
                 <| case model.gameStatus of
                         Loading -> []
@@ -213,12 +226,22 @@ main =
 fieldGenerator : Model -> Model
 fieldGenerator model =
     let
+        bombMean = model.size * model.size // 2
+        bombDeviation = model.size // 3
+
+        bombCountGenerator =
+            Random.int (bombMean - bombDeviation) (bombMean + bombDeviation)
+
+        bombs =
+            Random.step bombCountGenerator (Random.initialSeed model.seed)
+                |> Tuple.first
+
         listGenerator =
             Random.List.shuffle (Tuple.first model.bombOrNot)
                 |> Random.map
                     (\l ->
-                        ( List.take model.bombs l
-                        , List.drop model.bombs l
+                        ( List.take bombs l
+                        , List.drop bombs l
                         )
                     )
 
@@ -227,6 +250,7 @@ fieldGenerator model =
     in
         { model
         | bombOrNot = newBombOrNot
+        , bombs = bombs
         , field =
             Dict.map
                 (\c tile ->
@@ -239,8 +263,10 @@ fieldGenerator model =
 randomOpen : Model -> Model
 randomOpen model =
     let
+        openMin = model.size + 1
+        openMax = model.size * 2
         (n, newSeed) =
-            Random.step (Random.int 6 9) (Random.initialSeed model.seed)
+            Random.step (Random.int openMin openMax) (Random.initialSeed model.seed)
     in
         { model
         | field =
@@ -329,19 +355,26 @@ tileView (x,y) model =
             else
                 model.hover == (x,y)
     in
-            [ Svg.rect
-                [ At.x <| String.fromInt <| x*tileSize+5
-                , At.y <| String.fromInt <| y*tileSize+5
-                , At.width <| String.fromInt <| tileSize+5
-                , At.height <| String.fromInt <| tileSize+5
-                , Ev.onClick <| Opened (x,y)
-                , rightClickEvent <| Flagged (x,y)
-                , At.stroke "white"
-                , At.strokeWidth "4"
-                , At.fill <| if isInsideHoverSight then "#292929" else "black"
-                , Ev.onMouseOver <| Hovered (x,y)
-                , Ev.onMouseOut <| HoverOut
-                ]
+            [ Svg.rect (
+                    [ At.x <| String.fromInt <| x*tileSize+5
+                    , At.y <| String.fromInt <| y*tileSize+5
+                    , At.width <| String.fromInt <| tileSize+5
+                    , At.height <| String.fromInt <| tileSize+5
+
+                    , At.stroke "white"
+                    , At.strokeWidth "4"
+                    , At.fill <| if isInsideHoverSight then "#292929" else "black"
+                    ]
+                    ++
+                    if model.gameStatus == Playing
+                    then
+                        [ Ev.onClick <| Opened (x,y)
+                        , rightClickEvent <| Flagged (x,y)
+                        , Ev.onMouseOver <| Hovered (x,y)
+                        , Ev.onMouseOut <| HoverOut
+                        ]
+                    else []
+                    )
                 [
                 ]
             , Svg.text_
@@ -364,16 +397,7 @@ tileView (x,y) model =
                 ]
             ]
 
-rightClickEvent : Msg -> Svg.Attribute Msg
-rightClickEvent msg =
-    Ev.custom
-        "contextmenu"
-        ( D.succeed
-            { message = msg
-            , stopPropagation = True
-            , preventDefault = True
-            }
-        )
+
 
 openSurround (x,y) s dic =
     let
@@ -422,3 +446,19 @@ getQueryInt str query =
                 _ -> Nothing
         )
     |> List.head
+
+
+
+------- JSON EVENT
+
+
+rightClickEvent : Msg -> Svg.Attribute Msg
+rightClickEvent msg =
+    Ev.custom
+        "contextmenu"
+        ( D.succeed
+            { message = msg
+            , stopPropagation = True
+            , preventDefault = True
+            }
+        )

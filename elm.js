@@ -5612,6 +5612,10 @@ var $elm$core$Maybe$map = F2(
 			return $elm$core$Maybe$Nothing;
 		}
 	});
+var $elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$Tuple$pair = F2(
@@ -5630,12 +5634,18 @@ var $elm$core$Maybe$withDefault = F2(
 var $author$project$Main$init = F3(
 	function (navKey, url, _v0) {
 		var newFieldSize = A2(
-			$elm$core$Maybe$withDefault,
-			$author$project$Main$defaultSize,
+			$elm$core$Basics$min,
+			10,
 			A2(
-				$author$project$Main$getQueryInt,
-				'size',
-				A2($elm$core$Maybe$withDefault, '', url.query)));
+				$elm$core$Basics$max,
+				5,
+				A2(
+					$elm$core$Maybe$withDefault,
+					$author$project$Main$defaultSize,
+					A2(
+						$author$project$Main$getQueryInt,
+						'size',
+						A2($elm$core$Maybe$withDefault, '', url.query)))));
 		var defaultReturn = _Utils_Tuple2(
 			0,
 			A2($elm$random$Random$generate, $author$project$Main$GetSeed, $elm$random$Random$independentSeed));
@@ -5670,7 +5680,7 @@ var $author$project$Main$init = F3(
 					},
 					A2($elm$core$List$range, 0, newFieldSize - 1)),
 				_List_Nil),
-			bombs: 10,
+			bombs: 15,
 			field: $elm$core$Dict$fromList(
 				A2(
 					$elm$core$List$map,
@@ -5996,12 +6006,19 @@ var $elm$core$List$take = F2(
 		return A3($elm$core$List$takeFast, 0, n, list);
 	});
 var $author$project$Main$fieldGenerator = function (model) {
+	var bombMean = ((model.size * model.size) / 2) | 0;
+	var bombDeviation = (model.size / 3) | 0;
+	var bombCountGenerator = A2($elm$random$Random$int, bombMean - bombDeviation, bombMean + bombDeviation);
+	var bombs = A2(
+		$elm$random$Random$step,
+		bombCountGenerator,
+		$elm$random$Random$initialSeed(model.seed)).a;
 	var listGenerator = A2(
 		$elm$random$Random$map,
 		function (l) {
 			return _Utils_Tuple2(
-				A2($elm$core$List$take, model.bombs, l),
-				A2($elm$core$List$drop, model.bombs, l));
+				A2($elm$core$List$take, bombs, l),
+				A2($elm$core$List$drop, bombs, l));
 		},
 		$elm_community$random_extra$Random$List$shuffle(model.bombOrNot.a));
 	var _v0 = A2(
@@ -6014,6 +6031,7 @@ var $author$project$Main$fieldGenerator = function (model) {
 		model,
 		{
 			bombOrNot: newBombOrNot,
+			bombs: bombs,
 			field: A2(
 				$elm$core$Dict$map,
 				F2(
@@ -6164,9 +6182,11 @@ var $author$project$Main$openSurround = F3(
 			dic) : dic;
 	});
 var $author$project$Main$randomOpen = function (model) {
+	var openMin = model.size + 1;
+	var openMax = model.size * 2;
 	var _v0 = A2(
 		$elm$random$Random$step,
-		A2($elm$random$Random$int, 6, 9),
+		A2($elm$random$Random$int, openMin, openMax),
 		$elm$random$Random$initialSeed(model.seed));
 	var n = _v0.a;
 	var newSeed = _v0.b;
@@ -6221,7 +6241,10 @@ var $author$project$Main$gameUpdate = F2(
 								var _v4 = _v2.a;
 								return _Utils_update(
 									model,
-									{gameStatus: $author$project$Main$GameOver});
+									{
+										gameStatus: $author$project$Main$GameOver,
+										hover: _Utils_Tuple2(-100, -100)
+									});
 							case 'Open':
 								var _v5 = _v2.a;
 								var newField = A3(
@@ -6239,7 +6262,8 @@ var $author$project$Main$gameUpdate = F2(
 									{
 										field: newField,
 										flags: newFlagCount,
-										gameStatus: _Utils_eq(newFlagCount, model.bombs) ? $author$project$Main$GameOver : model.gameStatus
+										gameStatus: _Utils_eq(newFlagCount, model.bombs) ? $author$project$Main$GameOver : model.gameStatus,
+										hover: _Utils_eq(newFlagCount, model.bombs) ? _Utils_Tuple2(-100, -100) : model.hover
 									});
 							default:
 								break _v2$3;
@@ -6265,7 +6289,10 @@ var $author$project$Main$gameUpdate = F2(
 								var _v8 = _v7.a;
 								return _Utils_update(
 									model,
-									{gameStatus: $author$project$Main$GameOver});
+									{
+										gameStatus: $author$project$Main$GameOver,
+										hover: _Utils_Tuple2(-100, -100)
+									});
 							case 'Bomb':
 								var _v9 = _v7.a;
 								return _Utils_eq(model.flags, model.bombs - 1) ? _Utils_update(
@@ -6277,7 +6304,8 @@ var $author$project$Main$gameUpdate = F2(
 											$author$project$Main$Flag,
 											model.field),
 										flags: model.flags + 1,
-										gameStatus: $author$project$Main$GameOver
+										gameStatus: $author$project$Main$GameOver,
+										hover: _Utils_Tuple2(-100, -100)
 									}) : _Utils_update(
 									model,
 									{
@@ -6477,31 +6505,35 @@ var $author$project$Main$tileView = F2(
 			[
 				A2(
 				$elm$svg$Svg$rect,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$x(
-						$elm$core$String$fromInt((x * $author$project$Main$tileSize) + 5)),
-						$elm$svg$Svg$Attributes$y(
-						$elm$core$String$fromInt((y * $author$project$Main$tileSize) + 5)),
-						$elm$svg$Svg$Attributes$width(
-						$elm$core$String$fromInt($author$project$Main$tileSize + 5)),
-						$elm$svg$Svg$Attributes$height(
-						$elm$core$String$fromInt($author$project$Main$tileSize + 5)),
-						$elm$svg$Svg$Events$onClick(
-						$author$project$Main$Opened(
-							_Utils_Tuple2(x, y))),
-						$author$project$Main$rightClickEvent(
-						$author$project$Main$Flagged(
-							_Utils_Tuple2(x, y))),
-						$elm$svg$Svg$Attributes$stroke('white'),
-						$elm$svg$Svg$Attributes$strokeWidth('4'),
-						$elm$svg$Svg$Attributes$fill(
-						isInsideHoverSight ? '#292929' : 'black'),
-						$elm$svg$Svg$Events$onMouseOver(
-						$author$project$Main$Hovered(
-							_Utils_Tuple2(x, y))),
-						$elm$svg$Svg$Events$onMouseOut($author$project$Main$HoverOut)
-					]),
+				_Utils_ap(
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$x(
+							$elm$core$String$fromInt((x * $author$project$Main$tileSize) + 5)),
+							$elm$svg$Svg$Attributes$y(
+							$elm$core$String$fromInt((y * $author$project$Main$tileSize) + 5)),
+							$elm$svg$Svg$Attributes$width(
+							$elm$core$String$fromInt($author$project$Main$tileSize + 5)),
+							$elm$svg$Svg$Attributes$height(
+							$elm$core$String$fromInt($author$project$Main$tileSize + 5)),
+							$elm$svg$Svg$Attributes$stroke('white'),
+							$elm$svg$Svg$Attributes$strokeWidth('4'),
+							$elm$svg$Svg$Attributes$fill(
+							isInsideHoverSight ? '#292929' : 'black')
+						]),
+					_Utils_eq(model.gameStatus, $author$project$Main$Playing) ? _List_fromArray(
+						[
+							$elm$svg$Svg$Events$onClick(
+							$author$project$Main$Opened(
+								_Utils_Tuple2(x, y))),
+							$author$project$Main$rightClickEvent(
+							$author$project$Main$Flagged(
+								_Utils_Tuple2(x, y))),
+							$elm$svg$Svg$Events$onMouseOver(
+							$author$project$Main$Hovered(
+								_Utils_Tuple2(x, y))),
+							$elm$svg$Svg$Events$onMouseOut($author$project$Main$HoverOut)
+						]) : _List_Nil),
 				_List_Nil),
 				A2(
 				$elm$svg$Svg$text_,
@@ -6598,6 +6630,9 @@ var $author$project$Main$gameStatusView = function (model) {
 	}
 };
 var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
+var $author$project$Main$viewBox = function (s) {
+	return '0 0 ' + ($elm$core$String$fromInt((s * $author$project$Main$tileSize) + 15) + (' ' + $elm$core$String$fromInt((s * $author$project$Main$tileSize) + 15)));
+};
 var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
 var $author$project$Main$view = function (model) {
 	return {
@@ -6623,7 +6658,8 @@ var $author$project$Main$view = function (model) {
 								$elm$core$String$fromInt(model.size * $author$project$Main$tileSize)),
 								$elm$svg$Svg$Attributes$height(
 								$elm$core$String$fromInt(model.size * $author$project$Main$tileSize)),
-								$elm$svg$Svg$Attributes$viewBox('0 0 1000 1000')
+								$elm$svg$Svg$Attributes$viewBox(
+								$author$project$Main$viewBox(model.size))
 							]),
 						function () {
 							var _v0 = model.gameStatus;
