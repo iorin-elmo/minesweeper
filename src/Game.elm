@@ -10,7 +10,7 @@ genRandomInt = Random.int 0 Random.maxInt
 gameUpdate : Msg -> Model -> Model
 gameUpdate msg model =
     case msg of
-        TestStart ->
+        Start _ ->
             let
                 (newBombOrNot, newField) =
                     fieldGenerator model.size model.seed model.bombOrNot

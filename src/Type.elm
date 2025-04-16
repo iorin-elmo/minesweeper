@@ -21,7 +21,7 @@ type Msg
     | Flagged (Int, Int)
     | Hovered (Int, Int)
     | HoverOut
-    | TestStart
+    | Start ()
     | GetSeed Random.Seed
     | NoOp
 
@@ -40,5 +40,3 @@ type alias Model =
 
 type alias BombOrNot = ( List (Int, Int), List (Int, Int) )
 type alias Field = Dict (Int, Int) Tile
-
---listMap : (a -> b) -> BombOrNot -> b

@@ -5232,7 +5232,11 @@ var $author$project$Type$GetSeed = function (a) {
 	return {$: 'GetSeed', a: a};
 };
 var $author$project$Type$Loading = {$: 'Loading'};
+var $author$project$Type$Playing = {$: 'Playing'};
 var $author$project$Type$Safe = {$: 'Safe'};
+var $author$project$Type$Start = function (a) {
+	return {$: 'Start', a: a};
+};
 var $elm$core$List$append = F2(
 	function (xs, ys) {
 		if (!ys.b) {
@@ -5616,8 +5620,7 @@ var $elm$core$Basics$min = F2(
 	function (x, y) {
 		return (_Utils_cmp(x, y) < 0) ? x : y;
 	});
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$core$Basics$neq = _Utils_notEqual;
 var $elm$core$Tuple$pair = F2(
 	function (a, b) {
 		return _Utils_Tuple2(a, b);
@@ -5659,7 +5662,13 @@ var $author$project$Main$init = F3(
 					A2(
 						$elm$core$Maybe$map,
 						function (s) {
-							return A2($elm$core$Tuple$pair, s, $elm$core$Platform$Cmd$none);
+							return A2(
+								$elm$core$Tuple$pair,
+								s,
+								A2(
+									$elm$core$Task$perform,
+									$author$project$Type$Start,
+									$elm$core$Task$succeed(_Utils_Tuple0)));
 						},
 						A2($author$project$Main$getQueryInt, 'seed', queryString)));
 			} else {
@@ -5697,7 +5706,7 @@ var $author$project$Main$init = F3(
 						},
 						A2($elm$core$List$range, 0, newFieldSize - 1)))),
 			flags: 0,
-			gameStatus: $author$project$Type$Loading,
+			gameStatus: (!(!seed)) ? $author$project$Type$Loading : $author$project$Type$Playing,
 			hover: _Utils_Tuple2(-100, -100),
 			navKey: navKey,
 			seed: seed,
@@ -5708,10 +5717,10 @@ var $author$project$Main$init = F3(
 	});
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $author$project$Type$Flag = {$: 'Flag'};
 var $author$project$Type$GameOver = {$: 'GameOver'};
 var $author$project$Type$Open = {$: 'Open'};
-var $author$project$Type$Playing = {$: 'Playing'};
 var $elm$core$Dict$foldl = F3(
 	function (func, acc, dict) {
 		foldl:
@@ -6209,7 +6218,7 @@ var $author$project$Field$randomOpen = F4(
 var $author$project$Game$gameUpdate = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 'TestStart':
+			case 'Start':
 				var _v1 = A3($author$project$Field$fieldGenerator, model.size, model.seed, model.bombOrNot);
 				var newBombOrNot = _v1.a;
 				var newField = _v1.b;
@@ -6344,6 +6353,7 @@ var $author$project$Game$gameUpdate = F2(
 		}
 	});
 var $author$project$Game$genRandomInt = A2($elm$random$Random$int, 0, $elm$random$Random$maxInt);
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -6354,8 +6364,16 @@ var $author$project$Main$update = F2(
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
-					{seed: newSeed}),
-				A2($elm$browser$Browser$Navigation$pushUrl, model.navKey, newUrl));
+					{gameStatus: $author$project$Type$Playing, seed: newSeed}),
+				$elm$core$Platform$Cmd$batch(
+					_List_fromArray(
+						[
+							A2($elm$browser$Browser$Navigation$pushUrl, model.navKey, newUrl),
+							A2(
+							$elm$core$Task$perform,
+							$author$project$Type$Start,
+							$elm$core$Task$succeed(_Utils_Tuple0))
+						])));
 		} else {
 			return _Utils_Tuple2(
 				A2($author$project$Game$gameUpdate, msg, model),
@@ -6603,29 +6621,12 @@ var $author$project$View$fieldView = function (model) {
 				},
 				A2($elm$core$List$range, 0, model.size - 1))));
 };
-var $author$project$Type$TestStart = {$: 'TestStart'};
-var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$View$gameStatusView = function (model) {
 	var _v0 = model.gameStatus;
 	switch (_v0.$) {
 		case 'Loading':
-			return A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick($author$project$Type$TestStart)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Start')
-					]));
+			return $elm$html$Html$text('Loading...');
 		case 'Playing':
 			return $elm$html$Html$text(
 				'Bombs remain : ' + ($elm$core$String$fromInt(model.bombs - model.flags) + (' / ' + $elm$core$String$fromInt(model.bombs))));

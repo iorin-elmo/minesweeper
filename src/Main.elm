@@ -18,6 +18,7 @@ import Field exposing (..)
 import JsonEvent exposing (..)
 import View exposing (..)
 import Game exposing (..)
+import Task
 
 import Debug exposing (log)
 
@@ -53,7 +54,7 @@ init navKey url _ =
                     |> List.map
                         (\c -> (c, Safe))
                     |> Dict.fromList
-            , gameStatus = Loading
+            , gameStatus = if seed /= 0 then Loading else Playing
             , flags = 0
             , bombs = 15
             , hover = (-100,-100)
@@ -78,7 +79,7 @@ init navKey url _ =
                 Just queryString ->
                     queryString
                         |> getQueryInt "seed"
-                        |> Maybe.map (\s -> Tuple.pair s Cmd.none)
+                        |> Maybe.map (\s -> Tuple.pair s (Task.perform Start <| Task.succeed ()))
                         |> Maybe.withDefault defaultReturn
 
                 Nothing -> defaultReturn
@@ -94,8 +95,11 @@ update msg model =
                 newSeed = Random.step genRandomInt seed |> Tuple.first
                 newUrl = "/minesweeper/index.html?seed=" ++ String.fromInt newSeed ++ "&?size=" ++ String.fromInt model.size
             in
-                ( { model | seed = newSeed }
-                , Nav.pushUrl model.navKey newUrl
+                ( { model | seed = newSeed, gameStatus = Playing }
+                , Cmd.batch
+                    [ Nav.pushUrl model.navKey newUrl
+                    , Task.perform Start <| Task.succeed ()
+                    ]
                 )
 
         _ ->

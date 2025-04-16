@@ -1,7 +1,7 @@
 {
     "type": "application",
     "source-directories": [
-        "./"
+        "./src"
     ],
     "elm-version": "0.19.1",
     "dependencies": {
@@ -21,7 +21,11 @@
         }
     },
     "test-dependencies": {
-        "direct": {},
-        "indirect": {}
+        "direct": {
+            "elm-explorations/test": "2.2.0"
+        },
+        "indirect": {
+            "elm/bytes": "1.0.8"
+        }
     }
 }

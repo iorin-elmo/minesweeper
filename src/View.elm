@@ -40,7 +40,7 @@ view model =
 
 gameStatusView model =
     case model.gameStatus of
-        Loading -> Html.button [ HEv.onClick TestStart ][ Html.text "Start" ]
+        Loading -> Html.text "Loading..."
         Playing ->
             Html.text
                 <| "Bombs remain : " ++ (String.fromInt <| model.bombs - model.flags) ++ " / " ++ (String.fromInt model.bombs)
