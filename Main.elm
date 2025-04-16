@@ -14,6 +14,8 @@ import Random
 import Random.List
 import Url exposing (Url)
 
+import Debug exposing (log)
+
 defaultSize = 5
 
 
@@ -108,7 +110,7 @@ update msg model =
         GetSeed seed ->
             let
                 newSeed = Random.step genRandomInt seed |> Tuple.first
-                newUrl = "?seed=" ++ String.fromInt newSeed ++ "&?size=" ++ String.fromInt model.size
+                newUrl = "/index.html?seed=" ++ String.fromInt newSeed ++ "&?size=" ++ String.fromInt model.size
             in
                 ( { model | seed = newSeed }
                 , Nav.pushUrl model.navKey newUrl
