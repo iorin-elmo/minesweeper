@@ -11,9 +11,23 @@ gameUpdate : Msg -> Model -> Model
 gameUpdate msg model =
     case msg of
         TestStart ->
-            { model | gameStatus = Playing }
-                |> fieldGenerator
-                |> randomOpen
+            let
+                (newBombOrNot, newField) =
+                    fieldGenerator model.size model.seed model.bombOrNot
+
+                newField_ =
+                    randomOpen model.size model.seed newBombOrNot newField
+
+                bombs = newBombOrNot |> Tuple.first |> List.length
+
+            in
+            { model
+            | gameStatus = Playing
+            , bombOrNot = newBombOrNot
+            , field = newField_
+            , bombs = bombs
+            }
+
 
         Opened (x,y) ->
             case Dict.get (x,y) model.field of

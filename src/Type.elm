@@ -26,14 +26,19 @@ type Msg
     | NoOp
 
 type alias Model =
-    { field : Dict (Int, Int) Tile  -- (Int,Int) means coordinates
+    { field : Field  -- (Int,Int) means coordinates
     , gameStatus : GameStatus       -- game status ... loading/playing/gameover
     , flags : Int                   -- count of flags
     , bombs : Int                   -- count of bombs
     , hover : (Int, Int)
     , seed : Int
-    , bombOrNot : ( List (Int, Int), List (Int, Int) )
+    , bombOrNot : BombOrNot
     , navKey : Nav.Key
     , url : Url
     , size : Int
     }
+
+type alias BombOrNot = ( List (Int, Int), List (Int, Int) )
+type alias Field = Dict (Int, Int) Tile
+
+--listMap : (a -> b) -> BombOrNot -> b

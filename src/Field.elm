@@ -9,21 +9,27 @@ import Dict exposing (Dict)
 
 ------- FIELD GENERATOR
 
-fieldGenerator : Model -> Model
-fieldGenerator model =
+fieldGenerator : Int -> Int -> BombOrNot -> (BombOrNot ,Field)
+fieldGenerator size seed fieldData =
     let
-        bombMean = model.size * model.size // 2
-        bombDeviation = model.size // 3
+        bombMean = size * size // 2
+        bombDeviation = size // 3
 
         bombCountGenerator =
             Random.int (bombMean - bombDeviation) (bombMean + bombDeviation)
 
         bombs =
-            Random.step bombCountGenerator (Random.initialSeed model.seed)
+            Random.step bombCountGenerator (Random.initialSeed seed)
                 |> Tuple.first
 
+        newField =
+            fieldData
+                |> Tuple.first
+                |> List.map (\c -> (c, Safe))
+                |> Dict.fromList
+
         listGenerator =
-            Random.List.shuffle (Tuple.first model.bombOrNot)
+            Random.List.shuffle (Tuple.first fieldData)
                 |> Random.map
                     (\l ->
                         ( List.take bombs l
@@ -32,37 +38,31 @@ fieldGenerator model =
                     )
 
         (newBombOrNot, newSeed) =
-            Random.step listGenerator (Random.initialSeed model.seed)
+            Random.step listGenerator (Random.initialSeed seed)
     in
-        { model
-        | bombOrNot = newBombOrNot
-        , bombs = bombs
-        , field =
-            Dict.map
-                (\c tile ->
-                    if List.any ((==) c) <| Tuple.first newBombOrNot
-                    then Bomb
-                    else tile
-                ) model.field
-        }
+        ( newBombOrNot
+        , Dict.map
+            (\c tile ->
+                if List.any ((==) c) <| Tuple.first newBombOrNot
+                then Bomb
+                else tile
+            ) newField
+        )
 
-randomOpen : Model -> Model
-randomOpen model =
+randomOpen : Int -> Int -> BombOrNot -> Field -> Field
+randomOpen size seed bombOrNot field =
     let
-        openMin = model.size + 1
-        openMax = model.size * 2
+        openMin = size + 1
+        openMax = size * 2
         (n, newSeed) =
-            Random.step (Random.int openMin openMax) (Random.initialSeed model.seed)
+            Random.step (Random.int openMin openMax) (Random.initialSeed seed)
     in
-        { model
-        | field =
-            Dict.map
-                (\c tile ->
-                    if List.any ((==) c) (List.take n <| Tuple.second model.bombOrNot)
-                    then Open
-                    else tile
-                ) model.field
-        }
+        Dict.map
+            (\c tile ->
+                if List.any ((==) c) (List.take n <| Tuple.second bombOrNot)
+                then Open
+                else tile
+            ) field
 
 
 ------- UTILITIES
