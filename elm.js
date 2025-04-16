@@ -6318,7 +6318,7 @@ var $author$project$Main$update = F2(
 		if (msg.$ === 'GetSeed') {
 			var seed = msg.a;
 			var newSeed = A2($elm$random$Random$step, $author$project$Main$genRandomInt, seed).a;
-			var newUrl = 'minesweeper?seed=' + ($elm$core$String$fromInt(newSeed) + ('&?size=' + $elm$core$String$fromInt(model.size)));
+			var newUrl = '?seed=' + ($elm$core$String$fromInt(newSeed) + ('&?size=' + $elm$core$String$fromInt(model.size)));
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
