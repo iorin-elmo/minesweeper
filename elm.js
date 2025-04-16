@@ -6005,34 +6005,39 @@ var $elm$core$List$take = F2(
 	function (n, list) {
 		return A3($elm$core$List$takeFast, 0, n, list);
 	});
-var $author$project$Field$fieldGenerator = function (model) {
-	var bombMean = ((model.size * model.size) / 2) | 0;
-	var bombDeviation = (model.size / 3) | 0;
-	var bombCountGenerator = A2($elm$random$Random$int, bombMean - bombDeviation, bombMean + bombDeviation);
-	var bombs = A2(
-		$elm$random$Random$step,
-		bombCountGenerator,
-		$elm$random$Random$initialSeed(model.seed)).a;
-	var listGenerator = A2(
-		$elm$random$Random$map,
-		function (l) {
-			return _Utils_Tuple2(
-				A2($elm$core$List$take, bombs, l),
-				A2($elm$core$List$drop, bombs, l));
-		},
-		$elm_community$random_extra$Random$List$shuffle(model.bombOrNot.a));
-	var _v0 = A2(
-		$elm$random$Random$step,
-		listGenerator,
-		$elm$random$Random$initialSeed(model.seed));
-	var newBombOrNot = _v0.a;
-	var newSeed = _v0.b;
-	return _Utils_update(
-		model,
-		{
-			bombOrNot: newBombOrNot,
-			bombs: bombs,
-			field: A2(
+var $author$project$Field$fieldGenerator = F3(
+	function (size, seed, fieldData) {
+		var newField = $elm$core$Dict$fromList(
+			A2(
+				$elm$core$List$map,
+				function (c) {
+					return _Utils_Tuple2(c, $author$project$Type$Safe);
+				},
+				fieldData.a));
+		var bombMean = ((size * size) / 2) | 0;
+		var bombDeviation = (size / 3) | 0;
+		var bombCountGenerator = A2($elm$random$Random$int, bombMean - bombDeviation, bombMean + bombDeviation);
+		var bombs = A2(
+			$elm$random$Random$step,
+			bombCountGenerator,
+			$elm$random$Random$initialSeed(seed)).a;
+		var listGenerator = A2(
+			$elm$random$Random$map,
+			function (l) {
+				return _Utils_Tuple2(
+					A2($elm$core$List$take, bombs, l),
+					A2($elm$core$List$drop, bombs, l));
+			},
+			$elm_community$random_extra$Random$List$shuffle(fieldData.a));
+		var _v0 = A2(
+			$elm$random$Random$step,
+			listGenerator,
+			$elm$random$Random$initialSeed(seed));
+		var newBombOrNot = _v0.a;
+		var newSeed = _v0.b;
+		return _Utils_Tuple2(
+			newBombOrNot,
+			A2(
 				$elm$core$Dict$map,
 				F2(
 					function (c, tile) {
@@ -6041,9 +6046,8 @@ var $author$project$Field$fieldGenerator = function (model) {
 							$elm$core$Basics$eq(c),
 							newBombOrNot.a) ? $author$project$Type$Bomb : tile;
 					}),
-				model.field)
-		});
-};
+				newField));
+	});
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -6181,53 +6185,53 @@ var $author$project$Game$openSurround = F3(
 				}),
 			dic) : dic;
 	});
-var $author$project$Field$randomOpen = function (model) {
-	var openMin = model.size + 1;
-	var openMax = model.size * 2;
-	var _v0 = A2(
-		$elm$random$Random$step,
-		A2($elm$random$Random$int, openMin, openMax),
-		$elm$random$Random$initialSeed(model.seed));
-	var n = _v0.a;
-	var newSeed = _v0.b;
-	return _Utils_update(
-		model,
-		{
-			field: A2(
-				$elm$core$Dict$map,
-				F2(
-					function (c, tile) {
-						return A2(
-							$elm$core$List$any,
-							$elm$core$Basics$eq(c),
-							A2($elm$core$List$take, n, model.bombOrNot.b)) ? $author$project$Type$Open : tile;
-					}),
-				model.field)
-		});
-};
+var $author$project$Field$randomOpen = F4(
+	function (size, seed, bombOrNot, field) {
+		var openMin = size + 1;
+		var openMax = size * 2;
+		var _v0 = A2(
+			$elm$random$Random$step,
+			A2($elm$random$Random$int, openMin, openMax),
+			$elm$random$Random$initialSeed(seed));
+		var n = _v0.a;
+		var newSeed = _v0.b;
+		return A2(
+			$elm$core$Dict$map,
+			F2(
+				function (c, tile) {
+					return A2(
+						$elm$core$List$any,
+						$elm$core$Basics$eq(c),
+						A2($elm$core$List$take, n, bombOrNot.b)) ? $author$project$Type$Open : tile;
+				}),
+			field);
+	});
 var $author$project$Game$gameUpdate = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'TestStart':
-				return $author$project$Field$randomOpen(
-					$author$project$Field$fieldGenerator(
-						_Utils_update(
-							model,
-							{gameStatus: $author$project$Type$Playing})));
+				var _v1 = A3($author$project$Field$fieldGenerator, model.size, model.seed, model.bombOrNot);
+				var newBombOrNot = _v1.a;
+				var newField = _v1.b;
+				var bombs = $elm$core$List$length(newBombOrNot.a);
+				var newField_ = A4($author$project$Field$randomOpen, model.size, model.seed, newBombOrNot, newField);
+				return _Utils_update(
+					model,
+					{bombOrNot: newBombOrNot, bombs: bombs, field: newField_, gameStatus: $author$project$Type$Playing});
 			case 'Opened':
-				var _v1 = msg.a;
-				var x = _v1.a;
-				var y = _v1.b;
-				var _v2 = A2(
+				var _v2 = msg.a;
+				var x = _v2.a;
+				var y = _v2.b;
+				var _v3 = A2(
 					$elm$core$Dict$get,
 					_Utils_Tuple2(x, y),
 					model.field);
-				_v2$3:
+				_v3$3:
 				while (true) {
-					if (_v2.$ === 'Just') {
-						switch (_v2.a.$) {
+					if (_v3.$ === 'Just') {
+						switch (_v3.a.$) {
 							case 'Safe':
-								var _v3 = _v2.a;
+								var _v4 = _v3.a;
 								return _Utils_update(
 									model,
 									{
@@ -6238,7 +6242,7 @@ var $author$project$Game$gameUpdate = F2(
 											model.field)
 									});
 							case 'Bomb':
-								var _v4 = _v2.a;
+								var _v5 = _v3.a;
 								return _Utils_update(
 									model,
 									{
@@ -6246,7 +6250,7 @@ var $author$project$Game$gameUpdate = F2(
 										hover: _Utils_Tuple2(-100, -100)
 									});
 							case 'Open':
-								var _v5 = _v2.a;
+								var _v6 = _v3.a;
 								var newField = A3(
 									$author$project$Game$flagSurround,
 									_Utils_Tuple2(x, y),
@@ -6266,27 +6270,27 @@ var $author$project$Game$gameUpdate = F2(
 										hover: _Utils_eq(newFlagCount, model.bombs) ? _Utils_Tuple2(-100, -100) : model.hover
 									});
 							default:
-								break _v2$3;
+								break _v3$3;
 						}
 					} else {
-						break _v2$3;
+						break _v3$3;
 					}
 				}
 				return model;
 			case 'Flagged':
-				var _v6 = msg.a;
-				var x = _v6.a;
-				var y = _v6.b;
-				var _v7 = A2(
+				var _v7 = msg.a;
+				var x = _v7.a;
+				var y = _v7.b;
+				var _v8 = A2(
 					$elm$core$Dict$get,
 					_Utils_Tuple2(x, y),
 					model.field);
-				_v7$2:
+				_v8$2:
 				while (true) {
-					if (_v7.$ === 'Just') {
-						switch (_v7.a.$) {
+					if (_v8.$ === 'Just') {
+						switch (_v8.a.$) {
 							case 'Safe':
-								var _v8 = _v7.a;
+								var _v9 = _v8.a;
 								return _Utils_update(
 									model,
 									{
@@ -6294,7 +6298,7 @@ var $author$project$Game$gameUpdate = F2(
 										hover: _Utils_Tuple2(-100, -100)
 									});
 							case 'Bomb':
-								var _v9 = _v7.a;
+								var _v10 = _v8.a;
 								return _Utils_eq(model.flags, model.bombs - 1) ? _Utils_update(
 									model,
 									{
@@ -6317,10 +6321,10 @@ var $author$project$Game$gameUpdate = F2(
 										flags: model.flags + 1
 									});
 							default:
-								break _v7$2;
+								break _v8$2;
 						}
 					} else {
-						break _v7$2;
+						break _v8$2;
 					}
 				}
 				return model;
@@ -6346,7 +6350,7 @@ var $author$project$Main$update = F2(
 		if (msg.$ === 'GetSeed') {
 			var seed = msg.a;
 			var newSeed = A2($elm$random$Random$step, $author$project$Game$genRandomInt, seed).a;
-			var newUrl = '/index.html?seed=' + ($elm$core$String$fromInt(newSeed) + ('&?size=' + $elm$core$String$fromInt(model.size)));
+			var newUrl = '/minesweeper/index.html?seed=' + ($elm$core$String$fromInt(newSeed) + ('&?size=' + $elm$core$String$fromInt(model.size)));
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
